@@ -1,0 +1,38 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kinder-app-deployment
+  labels:
+    app: kinder-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kinder-app
+  template:
+    metadata:
+      labels:
+        app: kinder-app
+    spec:
+      containers:
+        - name: kinder-app
+          image: your-docker-registry-url/kinder-app:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kinder-app-service
+spec:
+  selector:
+    app: kinder-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer

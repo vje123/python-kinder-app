@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shape and Color Selector</title>
+</head>
+<body>
+    <h1>Kindergarten Shape and Color Selector</h1>
+
+    <form id="selectionForm">
+        <label for="shapes">Select Shape:</label>
+        <select id="shapes" name="shape"></select>
+
+        <label for="colors">Select Color:</label>
+        <select id="colors" name="color"></select>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>Result:</h2>
+    <div id="result"></div>
+
+    <script>
+        async function fetchOptions(endpoint, elementId) {
+            const response = await fetch(`http://localhost:8080/api/${endpoint}`);
+            const data = await response.json();
+            const select = document.getElementById(elementId);
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = item;
+                select.appendChild(option);
+            });
+        }
+
+        document.getElementById('selectionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const shape = document.getElementById('shapes').value;
+            const color = document.getElementById('colors').value;
+            const response = await fetch(`http://localhost:8080/api/select?shape=${shape}&color=${color}`, { method: 'POST' });
+            const result = await response.json();
+            document.getElementById('result').textContent = `Selected Shape: ${result.selectedShape}, Color: ${result.selectedColor}`;
+        });
+
+        fetchOptions('shapes', 'shapes');
+        fetchOptions('colors', 'colors');
+    </script>
+</body>
+</html>
