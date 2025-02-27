@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'kinder-app:latest'
-        DOCKER_REGISTRY = 'your-docker-registry-url'
+        DOCKER_REGISTRY = 'docker.io/vijay8181/kinder-app:v1'
     }
 
     stages {
