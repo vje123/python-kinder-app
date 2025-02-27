@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: kinder-app
-          image: your-docker-registry-url/kinder-app:latest
+          image: docker.io/vijay8181/kinder-app:v1
           ports:
             - containerPort: 8080
           env:
