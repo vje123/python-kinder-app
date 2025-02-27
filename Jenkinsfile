@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'kinder-app:latest'
+        DOCKER_IMAGE = 'kinder-app:v1'
         DOCKER_REGISTRY = 'docker.io/vijay8181/kinder-app:v1'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                checkout scm
+                git branch: 'main', credentialsID: 'git-cred'checkout https://github.com/vijay/kinder-app.git
             }
         }
 
@@ -37,7 +37,6 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 sh 'kubectl apply -f k8s/deployment.yaml'
-                sh 'kubectl apply -f k8s/service.yaml'
             }
         }
     }
