@@ -26,16 +26,18 @@ jobs:
         distribution: 'temurin'
         server-id: github
         settings-path: ${{ github.workspace }} # Path for settings.xml
+
     - name: Configure Maven Settings
       run: |
         mkdir -p ~/.m2
-        cp $GITHUB_WORKSPACE/.github/workflows/settings.xml ~/.m2/settings.xml
+        cp .github/workflows/settings.xml ~/.m2/settings.xml
 
     - name: Build with Maven
       run: mvn -B clean install --file pom.xml
 
     - name: Upload JAR to GitHub Releases
       uses: softprops/action-gh-release@v2
+      if: success()  # Ensures previous steps succeeded
       with:
         files: target/kinder-app-1.0.1-SNAPSHOT.jar
         tag_name: v1.0.1
@@ -44,6 +46,13 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -s $GITHUB_WORKSPACE/.github/workflows/settings.xml
+      run: mvn deploy --settings ~/.m2/settings.xml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: kinder-app-artifact
+        path: target/kinder-app-1.0.1-SNAPSHOT.jar
+        retention-days: 30
