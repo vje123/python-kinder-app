@@ -6,7 +6,7 @@
 
     <groupId>com.kinder</groupId>
     <artifactId>kinder-app</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>  <!-- 🔹 Updated to SNAPSHOT version -->
     <packaging>jar</packaging>
 
     <name>Kinder App</name>
@@ -28,14 +28,14 @@
 
     <distributionManagement>
         <repository>
-            <id>github</id>
+            <id>github</id> <!-- 🔹 Ensure this ID matches settings.xml -->
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/vje123/python-kinder-app</url>
+            <url>https://maven.pkg.github.com/vje123/kinder-app</url> <!-- 🔹 Updated repo URL -->
         </repository>
         <snapshotRepository>
             <id>github</id>
             <name>GitHub Snapshot Repository</name>
-            <url>https://maven.pkg.github.com/vje123/python-kinder-app</url>
+            <url>https://maven.pkg.github.com/vje123/kinder-app</url> <!-- 🔹 Updated snapshot repo URL -->
         </snapshotRepository>
     </distributionManagement>
 
@@ -72,7 +72,3 @@
         </plugins>
     </build>
 </project>
-
-
-
-
