@@ -34,6 +34,15 @@ jobs:
     - name: Build with Maven
       run: mvn -B clean install --file pom.xml
 
+    - name: Upload JAR to GitHub Releases
+      uses: softprops/action-gh-release@v2
+      with:
+        files: target/kinder-app-1.0.1-SNAPSHOT.jar
+        tag_name: v1.0.1
+        release_name: "Kinder App v1.0.1"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Publish to GitHub Packages Apache Maven
       run: mvn deploy -s $GITHUB_WORKSPACE/.github/workflows/settings.xml
       env:
