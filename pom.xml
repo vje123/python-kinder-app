@@ -25,6 +25,20 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/vje123/python-kinder-app</url>
+        </repository>
+        <snapshotRepository>
+            <id>github</id>
+            <name>GitHub Snapshot Repository</name>
+            <url>https://maven.pkg.github.com/vje123/python-kinder-app</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>
@@ -58,5 +72,7 @@
         </plugins>
     </build>
 </project>
+
+
 
 
