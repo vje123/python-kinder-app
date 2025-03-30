@@ -67,31 +67,31 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Terraform Init
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-        run: terraform init
-        working-directory: terraform
+      # - name: Terraform Init
+      #   env:
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     AWS_REGION: ${{ secrets.AWS_REGION }}
+      #   run: terraform init
+      #   working-directory: terraform
 
-      - name: Terraform Apply
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-        run: terraform apply -auto-approve
-        working-directory: terraform
+      # - name: Terraform Apply
+      #   env:
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     AWS_REGION: ${{ secrets.AWS_REGION }}
+      #   run: terraform apply -auto-approve
+      #   working-directory: terraform
 
-      - name: Get EC2 Instance IP
-        id: ec2_ip
-        run: echo "EC2_IP=$(terraform output -raw instance_ip)" >> $GITHUB_ENV
-        working-directory: terraform
+      # - name: Get EC2 Instance IP
+      #   id: ec2_ip
+      #   run: echo "EC2_IP=$(terraform output -raw instance_ip)" >> $GITHUB_ENV
+      #   working-directory: terraform
 
-      - name: Wait for EC2 SSH to be ready
-        run: |
-          echo "Waiting for EC2 instance to be ready..."
-          sleep 120
+      # - name: Wait for EC2 SSH to be ready
+      #   run: |
+      #     echo "Waiting for EC2 instance to be ready..."
+      #     sleep 120
 
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@master
