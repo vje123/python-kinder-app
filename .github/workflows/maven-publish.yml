@@ -49,7 +49,8 @@ jobs:
     - name: Publish to GitHub Packages
       run: |
         mvn deploy -s $GITHUB_WORKSPACE/settings.xml \
-            -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/vje123/python-kinder-app
+            -DaltDeploymentRepository=github::https://maven.pkg.github.com/vje123/python-kinder-app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
   
