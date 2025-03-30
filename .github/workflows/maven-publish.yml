@@ -48,7 +48,7 @@ jobs:
     # - name: Publish to GitHub Packages Apache Maven
     #   run: mvn deploy --settings ~/.m2/settings.xml
     #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4
@@ -56,3 +56,49 @@ jobs:
         name: kinder-app-artifact
         path: target/kinder-app-1.0.1-SNAPSHOT.jar
         retention-days: 30
+  deploy:
+      needs: build  # Runs after build job
+      runs-on: ubuntu-latest
+
+      steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform  # Ensure Terraform files are in this directory
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: terraform
+
+      - name: Get EC2 Instance IP
+        id: ec2_ip
+        run: echo "EC2_IP=$(terraform output -raw instance_ip)" >> $GITHUB_ENV
+        working-directory: terraform
+
+      - name: Wait for EC2 SSH to be ready
+        run: |
+          echo "Waiting for EC2 instance to be ready..."
+          sleep 120
+
+      - name: Copy JAR to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.EC2_IP }}
+          username: ubuntu
+          key: ${{ secrets.AWS_SSH_KEY }}
+          source: "target/kinder-app-1.0.1-SNAPSHOT.jar"
+          target: "/home/ubuntu/app"
+
+      - name: Start Application on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.EC2_IP }}
+          username: ubuntu
+          key: ${{ secrets.AWS_SSH_KEY }}
+          script: |
+            nohup java -jar /home/ubuntu/app/kinder-app-1.0.1-SNAPSHOT.jar > app.log 2>&1 &
