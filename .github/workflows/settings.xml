@@ -5,7 +5,7 @@
         <server>
             <id>github</id> <!-- 🔹 Matches the ID in pom.xml -->
             <username>vje123</username>
-            <password>${env.GITHUB_TOKEN}</password>
+            <password>${env.GH_PAT}</password>
         </server>
     </servers>
 </settings>
