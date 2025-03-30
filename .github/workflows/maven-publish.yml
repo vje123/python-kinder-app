@@ -30,7 +30,7 @@ jobs:
     - name: Build with Maven
       run: mvn -B clean install --file pom.xml
 
-    # - name: Publish to GitHub Packages Apache Maven
-    #   run: mvn deploy -s $GITHUB_WORKSPACE/.github/workflows/settings.xml
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.PAT }}
+    - name: Publish to GitHub Packages Apache Maven
+      run: mvn deploy -s $GITHUB_WORKSPACE/.github/workflows/settings.xml
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_PAT }}
