@@ -45,10 +45,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy --settings ~/.m2/settings.xml
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Publish to GitHub Packages Apache Maven
+    #   run: mvn deploy --settings ~/.m2/settings.xml
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4
