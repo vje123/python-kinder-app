@@ -83,10 +83,10 @@ jobs:
       #   run: terraform apply -auto-approve
       #   working-directory: terraform
 
-      - name: Get EC2 Instance IP
-        id: ec2_ip
-        run: echo "EC2_IP=$(terraform output -raw instance_ip)" >> $GITHUB_ENV
-        working-directory: terraform
+      # - name: Get EC2 Instance IP
+      #   id: ec2_ip
+      #   run: echo "EC2_IP=$(terraform output -raw instance_ip)" >> $GITHUB_ENV
+      #   working-directory: terraform
 
       # - name: Wait for EC2 SSH to be ready
       #   run: |
