@@ -98,7 +98,7 @@ jobs:
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@master
         with:
-          host: ${{ env.EC2_IP }}
+          host: "100.26.151.160"
           username: ubuntu
           key: ${{ secrets.AWS_SSH_KEY }}
           source: "target/kinder-app-1.0.1-SNAPSHOT.jar"
@@ -107,7 +107,7 @@ jobs:
       - name: Start Application on EC2
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ env.EC2_IP }}
+          host: "100.26.151.160"
           username: ubuntu
           key: ${{ secrets.AWS_SSH_KEY }}
           script: |
