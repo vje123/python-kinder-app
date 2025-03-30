@@ -26,6 +26,10 @@ jobs:
         distribution: 'temurin'
         server-id: github
         settings-path: ${{ github.workspace }} # Path for settings.xml
+    - name: Configure Maven Settings
+      run: |
+        mkdir -p ~/.m2
+        cp $GITHUB_WORKSPACE/.github/workflows/settings.xml ~/.m2/settings.xml
 
     - name: Build with Maven
       run: mvn -B clean install --file pom.xml
