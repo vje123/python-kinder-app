@@ -92,6 +92,8 @@ jobs:
       #   run: |
       #     echo "Waiting for EC2 instance to be ready..."
       #     sleep 120
+      - name: Debug EC2_IP
+        run: echo "EC2 IP Address: ${{ env.EC2_IP }}"
 
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@master
