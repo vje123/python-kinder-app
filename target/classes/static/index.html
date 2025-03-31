@@ -6,45 +6,64 @@
     <title>Shape and Color Selector</title>
 </head>
 <body>
-    <h1>Kindergarten Shape and Color Selector</h1>
+    <h2>Select a Shape and Color</h2>
+    
+    <label for="shapes">Shape:</label>
+    <select id="shapes"></select>
 
-    <form id="selectionForm">
-        <label for="shapes">Select Shape:</label>
-        <select id="shapes" name="shape"></select>
+    <label for="colors">Color:</label>
+    <select id="colors"></select>
 
-        <label for="colors">Select Color:</label>
-        <select id="colors" name="color"></select>
+    <button onclick="submitSelection()">Submit</button>
 
-        <button type="submit">Submit</button>
-    </form>
-
-    <h2>Result:</h2>
-    <div id="result"></div>
+    <p id="result"></p>
 
     <script>
-        async function fetchOptions(endpoint, elementId) {
-            const response = await fetch(`http://localhost:8080/api/${endpoint}`);
-            const data = await response.json();
-            const select = document.getElementById(elementId);
-            data.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item;
-                option.textContent = item;
-                select.appendChild(option);
-            });
+        const API_URL = "http://3.239.237.167:8080/api";  // Update this with your EC2 instance IP
+
+        async function loadDropdowns() {
+            try {
+                let shapeRes = await fetch(`${API_URL}/shapes`);
+                let colorRes = await fetch(`${API_URL}/colors`);
+
+                let shapes = await shapeRes.json();
+                let colors = await colorRes.json();
+
+                let shapeSelect = document.getElementById("shapes");
+                let colorSelect = document.getElementById("colors");
+
+                shapes.forEach(shape => {
+                    let option = document.createElement("option");
+                    option.value = shape;
+                    option.textContent = shape;
+                    shapeSelect.appendChild(option);
+                });
+
+                colors.forEach(color => {
+                    let option = document.createElement("option");
+                    option.value = color;
+                    option.textContent = color;
+                    colorSelect.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error("Error loading dropdowns:", error);
+            }
         }
 
-        document.getElementById('selectionForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const shape = document.getElementById('shapes').value;
-            const color = document.getElementById('colors').value;
-            const response = await fetch(`http://3.239.237.167:8080/api/select?shape=${shape}&color=${color}`, { method: 'POST' });
-            const result = await response.json();
-            document.getElementById('result').textContent = `Selected Shape: ${result.selectedShape}, Color: ${result.selectedColor}`;
-        });
+        async function submitSelection() {
+            let shape = document.getElementById("shapes").value;
+            let color = document.getElementById("colors").value;
 
-        fetchOptions('shapes', 'shapes');
-        fetchOptions('colors', 'colors');
+            let response = await fetch(`${API_URL}/select?shape=${shape}&color=${color}`, {
+                method: "POST"
+            });
+
+            let result = await response.json();
+            document.getElementById("result").innerText = `Selected Shape: ${result.selectedShape}, Selected Color: ${result.selectedColor}`;
+        }
+
+        window.onload = loadDropdowns;
     </script>
 </body>
 </html>
