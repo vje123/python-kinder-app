@@ -9,7 +9,7 @@ WORKDIR /app
 #     mvn -f /app/pom.xml clean package -DskipTests
 
 
-COPY target/kinder-app-1.0.1.jar /app/kinder-app.jar
+COPY kinder-app-1.0.1.jar /app/kinder-app.jar
 
 
 EXPOSE 8080
