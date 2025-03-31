@@ -82,4 +82,22 @@ jobs:
               run: |
                 docker push ${{ secrets.DOCKER_USERNAME }}/kinder-app:latest
                 docker push ${{ secrets.DOCKER_USERNAME }}/kinder-app:v1.0.1
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: docker
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.AWS_SSH_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/kinder-app:latest
+            docker stop kinder-app || true
+            docker rm kinder-app || true
+            docker run -d --name kinder-app -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/kinder-app:latest
+
       
