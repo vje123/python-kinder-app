@@ -9,7 +9,7 @@ RUN apk add --no-cache maven && \
     mvn -f /app/pom.xml clean package -DskipTests
 
 
-COPY target/kinder-app-1.0.0.jar /app/kinder-app.jar
+COPY target/kinder-app-1.0.1.jar /app/kinder-app.jar
 
 
 EXPOSE 8080
