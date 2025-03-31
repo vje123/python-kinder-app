@@ -6,64 +6,72 @@
     <title>Shape and Color Selector</title>
 </head>
 <body>
-    <h2>Select a Shape and Color</h2>
-    
-    <label for="shapes">Shape:</label>
-    <select id="shapes"></select>
+<h1>Kindergarten Shape and Color Selector</h1>
 
-    <label for="colors">Color:</label>
-    <select id="colors"></select>
+<form id="selectionForm">
+    <label for="shapes">Select Shape:</label>
+    <select id="shapes" name="shape"></select>
 
-    <button onclick="submitSelection()">Submit</button>
+    <label for="colors">Select Color:</label>
+    <select id="colors" name="color"></select>
 
-    <p id="result"></p>
+    <button type="submit">Submit</button>
+</form>
 
-    <script>
-        const API_URL = "http://3.239.237.167:8080/api";  // Update this with your EC2 instance IP
+<h2>Result:</h2>
+<div id="result"></div>
+<svg id="shapeDisplay" width="200" height="200"></svg>
 
-        async function loadDropdowns() {
-            try {
-                let shapeRes = await fetch(`${API_URL}/shapes`);
-                let colorRes = await fetch(`${API_URL}/colors`);
+<script>
+    async function fetchOptions(endpoint, elementId) {
+        const response = await fetch(`http://3.239.237.167:8000/api/${endpoint}`);
+        const data = await response.json();
+        const select = document.getElementById(elementId);
+        data.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item;
+            option.textContent = item;
+            select.appendChild(option);
+        });
+    }
 
-                let shapes = await shapeRes.json();
-                let colors = await colorRes.json();
+    document.getElementById('selectionForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const shape = document.getElementById('shapes').value;
+        const color = document.getElementById('colors').value;
+        const response = await fetch(`http://3.239.237.167:8000/api/select?shape=${shape}&color=${color}`, { method: 'POST' });
+        const result = await response.json();
+        document.getElementById('result').textContent = `Selected Shape: ${result.selectedShape}, Color: ${result.selectedColor}`;
+        drawShape(result.selectedShape, result.selectedColor);
+    });
 
-                let shapeSelect = document.getElementById("shapes");
-                let colorSelect = document.getElementById("colors");
+    function drawShape(shape, color) {
+        const svg = document.getElementById('shapeDisplay');
+        svg.innerHTML = '';
 
-                shapes.forEach(shape => {
-                    let option = document.createElement("option");
-                    option.value = shape;
-                    option.textContent = shape;
-                    shapeSelect.appendChild(option);
-                });
-
-                colors.forEach(color => {
-                    let option = document.createElement("option");
-                    option.value = color;
-                    option.textContent = color;
-                    colorSelect.appendChild(option);
-                });
-
-            } catch (error) {
-                console.error("Error loading dropdowns:", error);
-            }
+        let shapeElement;
+        switch (shape) {
+            case 'Circle':
+                shapeElement = `<circle cx="100" cy="100" r="50" fill="${color}" />`;
+                break;
+            case 'Square':
+                shapeElement = `<rect x="50" y="50" width="100" height="100" fill="${color}" />`;
+                break;
+            case 'Triangle':
+                shapeElement = `<polygon points="100,30 50,170 150,170" fill="${color}" />`;
+                break;
+            case 'Rectangle':
+                shapeElement = `<rect x="30" y="70" width="140" height="60" fill="${color}" />`;
+                break;
+            case 'Star':
+                shapeElement = `<polygon points="100,10 120,80 190,80 130,120 150,190 100,150 50,190 70,120 10,80 80,80" fill="${color}" />`;
+                break;
         }
+        svg.innerHTML = shapeElement;
+    }
 
-        async function submitSelection() {
-            let shape = document.getElementById("shapes").value;
-            let color = document.getElementById("colors").value;
-
-            let response = await fetch(`${API_URL}/select?shape=${shape}&color=${color}`, {
-                method: "POST"
-            });
-
-            let result = await response.json();
-            document.getElementById("result").innerText = `Selected Shape: ${result.selectedShape}, Selected Color: ${result.selectedColor}`;
-        }
-
-        window.onload = loadDropdowns;
-    </script>
+    fetchOptions('shapes', 'shapes');
+    fetchOptions('colors', 'colors');
+</script>
 </body>
 </html>
