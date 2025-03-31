@@ -4,16 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shape and Color Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        select, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        #shapeDisplay {
+            margin-top: 20px;
+            border: 1px solid #000;
+        }
+    </style>
 </head>
 <body>
+
 <h1>Kindergarten Shape and Color Selector</h1>
 
 <form id="selectionForm">
     <label for="shapes">Select Shape:</label>
-    <select id="shapes" name="shape"></select>
+    <select id="shapes" name="shape">
+        <option value="" disabled selected>Loading shapes...</option>
+    </select>
 
     <label for="colors">Select Color:</label>
-    <select id="colors" name="color"></select>
+    <select id="colors" name="color">
+        <option value="" disabled selected>Loading colors...</option>
+    </select>
 
     <button type="submit">Submit</button>
 </form>
@@ -23,33 +48,65 @@
 <svg id="shapeDisplay" width="200" height="200"></svg>
 
 <script>
+    const apiBaseUrl = "http://3.239.237.167:8000/api";
+
     async function fetchOptions(endpoint, elementId) {
-        const response = await fetch(`http://3.239.237.167:8000/api/${endpoint}`);
-        const data = await response.json();
-        const select = document.getElementById(elementId);
-        data.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item;
-            option.textContent = item;
-            select.appendChild(option);
-        });
+        try {
+            const response = await fetch(`${apiBaseUrl}/${endpoint}`);
+            if (!response.ok) throw new Error(`Error fetching ${endpoint}`);
+            
+            const data = await response.json();
+            console.log(`Fetched ${endpoint}:`, data);
+            
+            const select = document.getElementById(elementId);
+            select.innerHTML = ""; // Clear default loading option
+            
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = item;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error(`Failed to load ${endpoint}:`, error);
+            document.getElementById(elementId).innerHTML = `<option value="">Error loading ${endpoint}</option>`;
+        }
     }
 
     document.getElementById('selectionForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const shape = document.getElementById('shapes').value;
         const color = document.getElementById('colors').value;
-        const response = await fetch(`http://3.239.237.167:8000/api/select?shape=${shape}&color=${color}`, { method: 'POST' });
-        const result = await response.json();
-        document.getElementById('result').textContent = `Selected Shape: ${result.selectedShape}, Color: ${result.selectedColor}`;
-        drawShape(result.selectedShape, result.selectedColor);
+
+        if (!shape || !color) {
+            alert("Please select both a shape and a color.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${apiBaseUrl}/select?shape=${shape}&color=${color}`, { method: 'POST' });
+            if (!response.ok) throw new Error("Error submitting selection");
+
+            const result = await response.json();
+            console.log("API Response:", result);
+
+            document.getElementById('result').innerHTML = 
+                `<strong>Selected Shape:</strong> ${result.selectedShape} <br> 
+                 <strong>Selected Color:</strong> <span style="color:${result.selectedColor};">${result.selectedColor}</span>`;
+
+            drawShape(result.selectedShape, result.selectedColor);
+        } catch (error) {
+            console.error("Error submitting selection:", error);
+            document.getElementById('result').textContent = "Error submitting selection.";
+        }
     });
 
     function drawShape(shape, color) {
+        console.log("Drawing Shape:", shape, "Color:", color);
         const svg = document.getElementById('shapeDisplay');
         svg.innerHTML = '';
 
-        let shapeElement;
+        let shapeElement = "";
         switch (shape) {
             case 'Circle':
                 shapeElement = `<circle cx="100" cy="100" r="50" fill="${color}" />`;
@@ -66,12 +123,16 @@
             case 'Star':
                 shapeElement = `<polygon points="100,10 120,80 190,80 130,120 150,190 100,150 50,190 70,120 10,80 80,80" fill="${color}" />`;
                 break;
+            default:
+                console.warn("Invalid shape:", shape);
         }
-        svg.innerHTML = shapeElement;
+
+        if (shapeElement) svg.innerHTML = shapeElement;
     }
 
     fetchOptions('shapes', 'shapes');
     fetchOptions('colors', 'colors');
 </script>
+
 </body>
 </html>
