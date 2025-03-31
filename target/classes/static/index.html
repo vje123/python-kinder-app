@@ -38,7 +38,7 @@
             e.preventDefault();
             const shape = document.getElementById('shapes').value;
             const color = document.getElementById('colors').value;
-            const response = await fetch(`http://localhost:8080/api/select?shape=${shape}&color=${color}`, { method: 'POST' });
+            const response = await fetch(`http://3.239.237.167:8080/api/select?shape=${shape}&color=${color}`, { method: 'POST' });
             const result = await response.json();
             document.getElementById('result').textContent = `Selected Shape: ${result.selectedShape}, Color: ${result.selectedColor}`;
         });

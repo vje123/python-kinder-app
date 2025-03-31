@@ -11,7 +11,7 @@ public class KinderApplication {
         SpringApplication.run(KinderApplication.class, args);
     }
 }
-
+@CrossOrigin(origins = "*") 
 @RestController
 @RequestMapping("/api")
 class ShapeColorController {
