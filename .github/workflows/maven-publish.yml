@@ -33,7 +33,7 @@ jobs:
         cp .github/workflows/settings.xml ~/.m2/settings.xml
 
     - name: Build with Maven
-      run: mvn -B clean install --file pom.xml
+      run: mvn -B clean package --file pom.xml
 
     - name: Upload JAR to GitHub Releases
       uses: softprops/action-gh-release@v2
@@ -54,18 +54,20 @@ jobs:
 
   docker:
           runs-on: ubuntu-latest
-          needs: build  # Ensure Maven build completes before Docker build
+          needs: build
           steps:
-      
             - name: Checkout Repository
               uses: actions/checkout@v4
-          
-            - name: Download JAR from GitHub Release
-              run: |
-                curl -L -o kinder-app.jar https://github.com/vje123/python-kinder-app/releases/download/v1.0.1/kinder-app-1.0.1-SNAPSHOT.jar
-          
+      
+            - name: Download Build Artifact
+              uses: actions/download-artifact@v4
+              with:
+                name: kinder-app-artifact
+      
             - name: Verify JAR File
-              run: ls -lh kinder-app.jar
+              run: |
+                ls -lh
+                sha256sum kinder-app-1.0.1-SNAPSHOT.jar
       
             - name: Log in to Docker Hub
               uses: docker/login-action@v3
@@ -82,6 +84,39 @@ jobs:
               run: |
                 docker push ${{ secrets.DOCKER_USERNAME }}/kinder-app:latest
                 docker push ${{ secrets.DOCKER_USERNAME }}/kinder-app:v1.0.1
+      
+
+
+  # docker:
+  #         runs-on: ubuntu-latest
+  #         needs: build  # Ensure Maven build completes before Docker build
+  #         steps:
+      
+  #           - name: Checkout Repository
+  #             uses: actions/checkout@v4
+          
+  #           - name: Download JAR from GitHub Release
+  #             run: |
+  #               curl -L -o kinder-app.jar https://github.com/vje123/python-kinder-app/releases/download/v1.0.1/kinder-app-1.0.1-SNAPSHOT.jar
+          
+  #           - name: Verify JAR File
+  #             run: ls -lh kinder-app.jar
+      
+  #           - name: Log in to Docker Hub
+  #             uses: docker/login-action@v3
+  #             with:
+  #               username: ${{ secrets.DOCKER_USERNAME }}
+  #               password: ${{ secrets.DOCKER_PASSWORD }}
+      
+  #           - name: Build Docker Image
+  #             run: |
+  #               docker build -t ${{ secrets.DOCKER_USERNAME }}/kinder-app:latest .
+  #               docker tag ${{ secrets.DOCKER_USERNAME }}/kinder-app:latest ${{ secrets.DOCKER_USERNAME }}/kinder-app:v1.0.1
+      
+  #           - name: Push Docker Image to Docker Hub
+  #             run: |
+  #               docker push ${{ secrets.DOCKER_USERNAME }}/kinder-app:latest
+  #               docker push ${{ secrets.DOCKER_USERNAME }}/kinder-app:v1.0.1
 
 
   deploy:
